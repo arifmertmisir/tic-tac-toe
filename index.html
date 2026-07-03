@@ -7,6 +7,44 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div class="startWrapper">
+        <h2>Welcome to the Tic-Tac-Toe Game!</h2>
+            <div class="nameWrapper">
+                <label for="name">Please enter your name:</label>
+                <input id="name" type="text" name="name">
+            </div>
+            <div class="score-board">
+                <table>
+                    <tr>
+                        <th colspan="2">Scoreboard</th>
+                    </tr>
+                    <tr>
+                        <td id="your-header">Your Score</td>
+                        <td>Computer Score</td>
+                    </tr>
+                    <tr>
+                        <td id="your-score">0</td>
+                        <td id="computer-score">0</td>
+                    </tr>
+                </table>
+                <h3 id="winner"></h3>
+            </div>
+        <div class="button-layout">
+            <button class="start-button">Start</button>
+            <button class="reset-button">Restart</button>
+        </div>
+    </div>
+    <div class="board" hidden>
+        <button class="element first" value="0"></button>
+        <button class="element second" value="1"></button>
+        <button class="element third" value="2"></button>
+        <button class="element fourth" value="3"></button>
+        <button class="element fifth" value="4"></button>
+        <button class="element sixth" value="5"></button>
+        <button class="element seventh" value="6"></button>
+        <button class="element eight" value="7"></button>
+        <button class="element ninth" value="8"></button>
+    </div>
     <script src="tic-tac-toe.js"></script>
 </body>
 </html>

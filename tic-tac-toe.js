@@ -1,114 +1,171 @@
 function createPlayer(name, preference) {
   let score = 0;
-  let verticalPick;
-  let horizontalPick;
-  const getVerticalPick = () => verticalPick;
-  const setVerticalPick = (pick) => {
-    verticalPick = pick;
-  };
-  const getHorizontalPick = () => horizontalPick;
-  const setHorizontalPick = (pick) => {
-    horizontalPick = pick;
-  };
+
   const getScore = () => score;
-  const increaseScore = () => {
-    score++;
-  };
+  const increaseScore = () => score++;
+  const resetScore = () => (score = 0);
+
   return {
     name,
     preference,
     getScore,
     increaseScore,
-    getVerticalPick,
-    setVerticalPick,
-    getHorizontalPick,
-    setHorizontalPick,
+    resetScore,
   };
 }
 
-const createGameBoard = (() => {
-  const verticalAxis = 3;
-  const horizontalAxis = 3;
-  const gameboard = Array.from({ length: verticalAxis }, () =>
-    Array(horizontalAxis).fill(),
-  );
-  return { verticalAxis, horizontalAxis, gameboard };
-})();
-
-function mark(currentPlayer, board, row, column) {
-  if (board[row][column] !== undefined) {
-    console.log("This place on the board is already filled!");
+function mark(currentPlayer, button, index, filledPlaces) {
+  if (button.textContent !== "") {
+    alert("This place on the board is already filled!");
     return true;
   }
-  board[row][column] = currentPlayer.preference;
+  button.textContent = currentPlayer.preference;
+  filledPlaces.push({ index, preference: currentPlayer.preference });
   return false;
+}
+
+function makeGridVisible(div) {
+  div.style.visibility = "visible";
+  div.style.display = "grid";
+}
+
+function reset(
+  player1,
+  player2,
+  buttons,
+  filledPlaces,
+  yourScoreField,
+  computerScoreField,
+  winnerField,
+) {
+  buttons.forEach((button) => {
+    button.textContent = "";
+    button.disabled = false;
+  });
+  yourScoreField.textContent = player1.resetScore();
+  computerScoreField.textContent = player2.resetScore();
+  winnerField.style.display = "none";
+  while (filledPlaces.length > 0) {
+    filledPlaces.pop();
+  }
 }
 
 const playGame = (() => {
   let winner = "";
-  function getWinner() {
-    return winner;
-  }
-  player1 = createPlayer("mert", "X");
-  player2 = createPlayer("computer", "O");
-  createGameBoard;
-  const boardSize =
-    createGameBoard.verticalAxis * createGameBoard.horizontalAxis;
-  const board = createGameBoard.gameboard;
-  for (let turn = 0; turn < boardSize; turn++) {
-    const currentPlayer = turn % 2 === 0 ? player1 : player2;
-    let row, column;
-    if (currentPlayer === player1) {
-      row = prompt("Please enter a row number between 0-2:");
-      column = prompt("Please enter a column number between 0-2:");
-    } else {
-      row = Math.floor(Math.random() * 3);
-      column = Math.floor(Math.random() * 3);
-    }
+  const getWinner = () => winner;
 
-    currentPlayer.setHorizontalPick(row);
-    currentPlayer.setVerticalPick(column);
-    const isPlaceFull = mark(currentPlayer, board, row, column);
-    if (isPlaceFull) {
-      turn--;
-      continue;
-    }
+  const yourHeader = document.querySelector("#your-header");
+  const nameField = document.querySelector("#name");
 
+  nameField.addEventListener("change", (event) => {
+    if (event.target.value !== "") {
+      yourHeader.textContent = event.target.value;
+      nameField.disabled = true;
+    }
+  });
+
+  const startButton = document.querySelector(".start-button");
+  const restartButton = document.querySelector(".reset-button");
+  const yourScoreField = document.querySelector("#your-score");
+  const computerScoreField = document.querySelector("#computer-score");
+  const winnerField = document.querySelector("#winner");
+  const boardDiv = document.querySelector(".board");
+  startButton.addEventListener("click", () => makeGridVisible(boardDiv));
+
+  const buttons = document.querySelectorAll(".element");
+  player1 = createPlayer("You", "X");
+  player2 = createPlayer("Computer", "O");
+
+  let filledPlaces = [];
+
+  restartButton.addEventListener("click", () => {
+    reset(
+      player1,
+      player2,
+      buttons,
+      filledPlaces,
+      yourScoreField,
+      computerScoreField,
+      winnerField,
+    );
+  });
+
+  const getPreferenceAt = (pos) => {
+    const item = filledPlaces.find((item) => item.index === pos);
+    return item ? item.preference : null;
+  };
+
+  function decideWinner(player) {
     if (
-      (board[0][0] === currentPlayer.preference &&
-        board[0][1] === currentPlayer.preference &&
-        board[0][2] === currentPlayer.preference) ||
-      (board[1][0] === currentPlayer.preference &&
-        board[1][1] === currentPlayer.preference &&
-        board[1][2] === currentPlayer.preference) ||
-      (board[2][0] === currentPlayer.preference &&
-        board[2][1] === currentPlayer.preference &&
-        board[2][2] === currentPlayer.preference) ||
-      (board[0][0] === currentPlayer.preference &&
-        board[1][1] === currentPlayer.preference &&
-        board[2][2] === currentPlayer.preference) ||
-      (board[0][2] === currentPlayer.preference &&
-        board[1][1] === currentPlayer.preference &&
-        board[2][0] === currentPlayer.preference) ||
-      (board[0][0] === currentPlayer.preference &&
-        board[1][0] === currentPlayer.preference &&
-        board[2][0] === currentPlayer.preference) ||
-      (board[0][1] === currentPlayer.preference &&
-        board[1][1] === currentPlayer.preference &&
-        board[2][1] === currentPlayer.preference) ||
-      (board[0][2] === currentPlayer.preference &&
-        board[1][2] === currentPlayer.preference &&
-        board[2][2] === currentPlayer.preference)
+      (getPreferenceAt(0) === player.preference &&
+        getPreferenceAt(1) === player.preference &&
+        getPreferenceAt(2) === player.preference) ||
+      (getPreferenceAt(3) === player.preference &&
+        getPreferenceAt(4) === player.preference &&
+        getPreferenceAt(5) === player.preference) ||
+      (getPreferenceAt(6) === player.preference &&
+        getPreferenceAt(7) === player.preference &&
+        getPreferenceAt(8) === player.preference) ||
+      (getPreferenceAt(0) === player.preference &&
+        getPreferenceAt(3) === player.preference &&
+        getPreferenceAt(6) === player.preference) ||
+      (getPreferenceAt(1) === player.preference &&
+        getPreferenceAt(4) === player.preference &&
+        getPreferenceAt(7) === player.preference) ||
+      (getPreferenceAt(2) === player.preference &&
+        getPreferenceAt(5) === player.preference &&
+        getPreferenceAt(8) === player.preference) ||
+      (getPreferenceAt(0) === player.preference &&
+        getPreferenceAt(4) === player.preference &&
+        getPreferenceAt(8) === player.preference) ||
+      (getPreferenceAt(2) === player.preference &&
+        getPreferenceAt(4) === player.preference &&
+        getPreferenceAt(6) === player.preference)
     ) {
-      winner = currentPlayer.name;
-      break;
+      winner = player.name;
+      buttons.forEach((button) => (button.disabled = true));
+
+      player.increaseScore();
+      winner.includes("Computer")
+        ? (computerScoreField.textContent = player.getScore())
+        : (yourScoreField.textContent = player.getScore());
+      winnerField.textContent = `${player.name} won!`;
+      winnerField.style.display = "block";
+      return true;
     }
-    console.log(JSON.parse(JSON.stringify(createGameBoard.gameboard)));
-  }
-  if (winner === "") {
-    winner = "tie!";
+    return false;
   }
 
+  function decideTie(filledPlaces) {
+    if (filledPlaces.length >= 9) {
+      winner = "tie!";
+      buttons.forEach((button) => (button.disabled = true));
+      winnerField.textContent = "It's a tie!";
+      winnerField.style.display = "block";
+      return true;
+    }
+    return false;
+  }
+
+  buttons.forEach((button, index) => {
+    button.addEventListener("click", () => {
+      const isPlaceFull = mark(player1, button, index, filledPlaces);
+      if (isPlaceFull) return;
+      if (decideWinner(player1)) return;
+      if (decideTie(filledPlaces)) return;
+
+      let randomIndex = Math.floor(Math.random() * 9);
+      while (filledPlaces.some((item) => item.index === randomIndex)) {
+        randomIndex = Math.floor(Math.random() * 9);
+      }
+
+      mark(player2, buttons[randomIndex], randomIndex, filledPlaces);
+      console.log(filledPlaces);
+
+      if (decideWinner(player2)) return;
+      if (decideTie(filledPlaces)) return;
+    });
+  });
   return { getWinner };
 })();
 
